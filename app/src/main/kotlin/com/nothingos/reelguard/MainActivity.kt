@@ -15,7 +15,7 @@ import com.nothingos.reelguard.worker.DailyResetWorker
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var preferencesManager: PreferencesManager
+    private val preferencesManager = PreferencesManager
 
     // Status
     private lateinit var statusDot: TextView
@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        preferencesManager = PreferencesManager(this)
+        PreferencesManager.initialize(this)
 
         bindViews()
         setupClickListeners()

@@ -38,7 +38,7 @@ class OverlayService : Service() {
     private var windowManager: WindowManager? = null
     private var hudView: TextView? = null
     private var isViewAdded = false
-    private lateinit var preferencesManager: PreferencesManager
+    private val preferencesManager = PreferencesManager
 
     private val countUpdatedReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -52,7 +52,7 @@ class OverlayService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        preferencesManager = PreferencesManager(this)
+        PreferencesManager.initialize(this)
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
         createNotificationChannel()
 

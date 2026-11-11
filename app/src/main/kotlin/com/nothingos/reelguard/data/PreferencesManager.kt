@@ -47,6 +47,9 @@ object PreferencesManager {
         return prefs.getInt(KEY_COUNT, 0)
     }
 
+    fun getTodayCount(): Int = getCurrentCount()
+    fun getTodayReelCount(): Int = getCurrentCount()
+
     fun getDailyLimit(): Int {
         checkInitialized()
         return prefs.getInt(KEY_LIMIT, DEFAULT_LIMIT)
