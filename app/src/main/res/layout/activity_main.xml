@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_primary"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <!-- ══════════════════════════════════════ -->
+        <!-- HEADER -->
+        <!-- ══════════════════════════════════════ -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="24dp"
+            android:paddingBottom="16dp">
+
+            <TextView
+                android:id="@+id/app_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/app_title"
+                android:textColor="@color/accent"
+                android:textSize="28sp"
+                android:fontFamily="monospace"
+                android:letterSpacing="0.15"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/app_subtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/app_subtitle"
+                android:textColor="@color/text_secondary"
+                android:textSize="11sp"
+                android:fontFamily="monospace"
+                android:letterSpacing="0.1"
+                android:layout_marginTop="4dp" />
+
+            <!-- Thin divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/border"
+                android:layout_marginTop="16dp" />
+        </LinearLayout>
+
+        <!-- ══════════════════════════════════════ -->
+        <!-- STATUS CARD -->
+        <!-- ══════════════════════════════════════ -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/card_background"
+            android:padding="16dp"
+            android:layout_marginBottom="12dp">
+
+            <!-- Status row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:id="@+id/status_dot"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="●"
+                    android:textSize="14sp"
+                    android:textColor="@color/status_active"
+                    android:layout_marginEnd="8dp" />
+
+                <TextView
+                    android:id="@+id/status_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/service_active"
+                    android:textColor="@color/text_primary"
+                    android:textSize="12sp"
+                    android:fontFamily="monospace"
+                    android:letterSpacing="0.1" />
+
+                <Switch
+                    android:id="@+id/service_toggle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:thumbTint="@color/switch_thumb_selector"
+                    android:trackTint="@color/switch_track_selector" />
+            </LinearLayout>
+
+            <!-- Counter display -->
+            <TextView
+                android:id="@+id/counter_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/counter_default"
+                android:textColor="@color/accent"
+                android:textSize="22sp"
+                android:fontFamily="monospace"
+                android:letterSpacing="0.05"
+                android:textStyle="bold"
+                android:layout_marginBottom="12dp" />
+
+            <!-- Progress bar -->
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:max="100"
+                android:progress="0"
+                android:progressTint="@color/accent"
+                android:progressBackgroundTint="@color/border"
+                android:layout_marginBottom="20dp" />
+
+            <!-- Limit row -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/daily_limit_label"
+                android:textColor="@color/text_secondary"
+                android:textSize="10sp"
+                android:fontFamily="monospace"
+                android:letterSpacing="0.15"
+                android:layout_marginBottom="8dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <EditText
+                    android:id="@+id/limit_input"
+                    android:layout_width="0dp"
+                    android:layout_height="44dp"
+                    android:layout_weight="1"
+                    android:hint="@string/limit_hint"
+                    android:hintTextColor="@color/text_secondary"
+                    android:inputType="number"
+                    android:textColor="@color/text_primary"
+                    android:textSize="14sp"
+                    android:fontFamily="monospace"
+                    android:background="@drawable/input_background"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:maxLength="4"
+                    android:layout_marginEnd="10dp" />
+
+                <Button
+                    android:id="@+id/set_limit_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="44dp"
+                    android:text="@string/set_limit"
+                    android:textColor="@color/accent"
+                    android:textSize="11sp"
+                    android:fontFamily="monospace"
+                    android:letterSpacing="0.1"
+                    android:background="@drawable/button_outline"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- ══════════════════════════════════════ -->
+        <!-- PERMISSIONS SECTION HEADER -->
+        <!-- ══════════════════════════════════════ -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/permissions_header"
+            android:textColor="@color/text_secondary"
+            android:textSize="10sp"
+            android:fontFamily="monospace"
+            android:letterSpacing="0.15"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="4dp" />
+
+        <!-- ══════════════════════════════════════ -->
+        <!-- OVERLAY PERMISSION CARD -->
+        <!-- ══════════════════════════════════════ -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/card_background"
+            android:padding="16dp"
+            android:layout_marginBottom="8dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="6dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/overlay_title"
+                        android:textColor="@color/text_primary"
+                        android:textSize="13sp"
+                        android:fontFamily="monospace"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/overlay_description"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="11sp"
+                        android:fontFamily="monospace"
+                        android:layout_marginTop="2dp" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/overlay_status_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/status_required"
+                    android:textColor="@color/status_inactive"
+                    android:textSize="11sp"
+                    android:fontFamily="monospace"
+                    android:layout_marginStart="8dp" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/overlay_grant_button"
+                android:layout_width="match_parent"
+                android:layout_height="38dp"
+                android:text="@string/grant_permission"
+                android:textColor="@color/accent"
+                android:textSize="11sp"
+                android:fontFamily="monospace"
+                android:letterSpacing="0.1"
+                android:background="@drawable/button_outline"
+                android:layout_marginTop="8dp" />
+        </LinearLayout>
+
+        <!-- ══════════════════════════════════════ -->
+        <!-- ACCESSIBILITY PERMISSION CARD -->
+        <!-- ══════════════════════════════════════ -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/card_background"
+            android:padding="16dp"
+            android:layout_marginBottom="8dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="6dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/accessibility_title"
+                        android:textColor="@color/text_primary"
+                        android:textSize="13sp"
+                        android:fontFamily="monospace"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/accessibility_description"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="11sp"
+                        android:fontFamily="monospace"
+                        android:layout_marginTop="2dp" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/accessibility_status_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/status_required"
+                    android:textColor="@color/status_inactive"
+                    android:textSize="11sp"
+                    android:fontFamily="monospace"
+                    android:layout_marginStart="8dp" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/accessibility_grant_button"
+                android:layout_width="match_parent"
+                android:layout_height="38dp"
+                android:text="@string/grant_permission"
+                android:textColor="@color/accent"
+                android:textSize="11sp"
+                android:fontFamily="monospace"
+                android:letterSpacing="0.1"
+                android:background="@drawable/button_outline"
+                android:layout_marginTop="8dp" />
+        </LinearLayout>
+
+        <!-- ══════════════════════════════════════ -->
+        <!-- NOTIFICATIONS PERMISSION CARD -->
+        <!-- ══════════════════════════════════════ -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/card_background"
+            android:padding="16dp"
+            android:layout_marginBottom="20dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="6dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/notification_title"
+                        android:textColor="@color/text_primary"
+                        android:textSize="13sp"
+                        android:fontFamily="monospace"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/notification_description"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="11sp"
+                        android:fontFamily="monospace"
+                        android:layout_marginTop="2dp" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/notification_status_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/status_required"
+                    android:textColor="@color/status_inactive"
+                    android:textSize="11sp"
+                    android:fontFamily="monospace"
+                    android:layout_marginStart="8dp" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/notification_grant_button"
+                android:layout_width="match_parent"
+                android:layout_height="38dp"
+                android:text="@string/grant_permission"
+                android:textColor="@color/accent"
+                android:textSize="11sp"
+                android:fontFamily="monospace"
+                android:letterSpacing="0.1"
+                android:background="@drawable/button_outline"
+                android:layout_marginTop="8dp" />
+        </LinearLayout>
+
+        <!-- ══════════════════════════════════════ -->
+        <!-- RESET BUTTON -->
+        <!-- ══════════════════════════════════════ -->
+        <Button
+            android:id="@+id/reset_button"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="@string/reset_count"
+            android:textColor="@color/status_inactive"
+            android:textSize="12sp"
+            android:fontFamily="monospace"
+            android:letterSpacing="0.1"
+            android:background="@drawable/button_outline_danger"
+            android:layout_marginBottom="32dp" />
+
+    </LinearLayout>
+</ScrollView>

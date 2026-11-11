@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Background -->
+    <color name="bg_primary">#0A0A0A</color>
+    <color name="bg_card">#141414</color>
+
+    <!-- Borders & dividers -->
+    <color name="border">#2A2A2A</color>
+
+    <!-- Text -->
+    <color name="text_primary">#E0E0E0</color>
+    <color name="text_secondary">#888888</color>
+
+    <!-- Accent -->
+    <color name="accent">#FFFFFF</color>
+
+    <!-- Status indicators -->
+    <color name="status_active">#4CAF50</color>
+    <color name="status_inactive">#FF4444</color>
+
+    <!-- Warning -->
+    <color name="limit_warning">#FF9800</color>
+
+    <!-- Switch states (used in selector drawables) -->
+    <color name="switch_thumb_on">#FFFFFF</color>
+    <color name="switch_thumb_off">#888888</color>
+    <color name="switch_track_on">#4CAF50</color>
+    <color name="switch_track_off">#2A2A2A</color>
+</resources>

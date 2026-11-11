@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.ReelGuard" parent="Theme.Material3.Dark.NoActionBar">
+        <!-- Brand colors -->
+        <item name="colorPrimary">@color/accent</item>
+        <item name="colorOnPrimary">@color/bg_primary</item>
+        <item name="colorPrimaryContainer">@color/bg_card</item>
+        <item name="colorOnPrimaryContainer">@color/text_primary</item>
+        <item name="colorSecondary">@color/text_secondary</item>
+        <item name="colorOnSecondary">@color/bg_primary</item>
+        <item name="colorSecondaryContainer">@color/bg_card</item>
+        <item name="colorOnSecondaryContainer">@color/text_primary</item>
+        <item name="colorTertiary">@color/status_active</item>
+        <item name="colorError">@color/status_inactive</item>
+
+        <!-- Surface / background -->
+        <item name="colorBackground">@color/bg_primary</item>
+        <item name="android:colorBackground">@color/bg_primary</item>
+        <item name="android:windowBackground">@color/bg_primary</item>
+        <item name="colorSurface">@color/bg_card</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="colorSurfaceVariant">@color/bg_card</item>
+        <item name="colorOnSurfaceVariant">@color/text_secondary</item>
+        <item name="colorOutline">@color/border</item>
+
+        <!-- System bars -->
+        <item name="android:statusBarColor">@color/bg_primary</item>
+        <item name="android:navigationBarColor">@color/bg_primary</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+
+        <!-- Text -->
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
+        <item name="android:textColorHint">@color/text_secondary</item>
+
+        <!-- EditText cursor / underline -->
+        <item name="android:colorControlActivated">@color/accent</item>
+        <item name="android:colorControlNormal">@color/border</item>
+
+        <!-- Switch -->
+        <item name="colorControlActivated">@color/accent</item>
+    </style>
+
+    <style name="ReelGuardDialog" parent="Theme.Material3.Dark.Dialog">
+        <item name="android:colorBackground">@color/bg_card</item>
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
+        <item name="colorPrimary">@color/accent</item>
+        <item name="buttonBarPositiveButtonStyle">@style/ReelGuardDialogButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/ReelGuardDialogButton</item>
+    </style>
+
+    <style name="ReelGuardDialogButton" parent="Widget.Material3.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/accent</item>
+        <item name="android:fontFamily">monospace</item>
+    </style>
+</resources>

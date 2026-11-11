@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App -->
+    <string name="app_name">ReelGuard</string>
+    <string name="app_title">REELGUARD</string>
+    <string name="app_subtitle">INSTAGRAM REEL LIMITER</string>
+
+    <!-- Accessibility service -->
+    <string name="accessibility_service_description">ReelGuard monitors Instagram to track and limit your daily Reel consumption. No data is collected or transmitted.</string>
+
+    <!-- Service status -->
+    <string name="service_active">SERVICE ACTIVE</string>
+    <string name="service_disabled">SERVICE DISABLED</string>
+    <string name="enable_service_label">ENABLE SERVICE</string>
+
+    <!-- Counter -->
+    <string name="counter_default">TODAY: 0 / 100 REELS</string>
+    <string name="counter_format">TODAY: %1$d / %2$d REELS</string>
+
+    <!-- Limit -->
+    <string name="daily_limit_label">DAILY REEL LIMIT</string>
+    <string name="limit_hint">100</string>
+    <string name="set_limit">SET LIMIT</string>
+    <string name="limit_set_toast">Limit set to %1$d reels</string>
+    <string name="limit_invalid_toast">Enter a limit between 1 and 9999</string>
+
+    <!-- Permissions header -->
+    <string name="permissions_header">REQUIRED PERMISSIONS</string>
+
+    <!-- Overlay permission -->
+    <string name="overlay_title">OVERLAY PERMISSION</string>
+    <string name="overlay_description">Shows limit reached overlay on screen</string>
+
+    <!-- Accessibility permission -->
+    <string name="accessibility_title">ACCESSIBILITY ACCESS</string>
+    <string name="accessibility_description">Detects Reels content in Instagram</string>
+
+    <!-- Notification permission -->
+    <string name="notification_title">NOTIFICATIONS</string>
+    <string name="notification_description">Sends alerts when daily limit is reached</string>
+
+    <!-- Permission status -->
+    <string name="status_granted">✓ GRANTED</string>
+    <string name="status_required">✗ REQUIRED</string>
+    <string name="grant_permission">GRANT</string>
+
+    <!-- Reset -->
+    <string name="reset_count">RESET TODAY\'S COUNT</string>
+    <string name="reset_dialog_title">Reset Count</string>
+    <string name="reset_dialog_message">Reset today\'s reel count to zero?</string>
+    <string name="reset_confirm">RESET</string>
+    <string name="cancel">CANCEL</string>
+    <string name="reset_success">Today\'s count has been reset</string>
+
+    <!-- Notification channel -->
+    <string name="notification_channel_id">reelguard_channel</string>
+    <string name="notification_channel_name">ReelGuard Alerts</string>
+    <string name="notification_channel_description">Notifications when reel limit is reached</string>
+    <string name="notification_limit_title">Reel Limit Reached</string>
+    <string name="notification_limit_message">You have reached your daily limit of %1$d reels.</string>
+
+    <!-- Overlay -->
+    <string name="overlay_limit_reached">LIMIT REACHED\n%1$d / %1$d REELS</string>
+    <string name="overlay_close">✕</string>
+    <string name="overlay_open_reelguard">OPEN REELGUARD</string>
+</resources>
