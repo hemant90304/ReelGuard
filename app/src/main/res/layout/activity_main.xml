@@ -148,7 +148,7 @@
                     android:layout_height="44dp"
                     android:layout_weight="1"
                     android:hint="@string/limit_hint"
-                    android:hintTextColor="@color/text_secondary"
+                    android:textColorHint="@color/text_secondary"
                     android:inputType="number"
                     android:textColor="@color/text_primary"
                     android:textSize="14sp"
