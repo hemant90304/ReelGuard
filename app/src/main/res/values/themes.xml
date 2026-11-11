@@ -14,7 +14,6 @@
         <item name="colorError">@color/status_inactive</item>
 
         <!-- Surface / background -->
-        <item name="colorBackground">@color/bg_primary</item>
         <item name="android:colorBackground">@color/bg_primary</item>
         <item name="android:windowBackground">@color/bg_primary</item>
         <item name="colorSurface">@color/bg_card</item>
