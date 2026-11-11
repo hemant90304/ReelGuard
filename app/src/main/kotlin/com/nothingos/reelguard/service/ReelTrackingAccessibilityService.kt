@@ -153,93 +153,57 @@ class ReelTrackingAccessibilityService : AccessibilityService() {
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         event ?: return
 
-        // We only care about Instagram
-        if (event.packageName?.toString() != INSTAGRAM_PKG) return
+        val pkg = event.packageName?.toString()
 
-        // Skip all processing if the service has been disabled by the user
-        if (!PreferencesManager.isServiceEnabled()) return
+        // If user left Instagram, stop overlay immediately
+        if (pkg != INSTAGRAM_PKG) {
+            if (isOverlayActive) {
+                stopOverlay()
+            }
+            return
+        }
+
+        // Skip if service is disabled in ReelGuard settings
+        if (!PreferencesManager.isServiceEnabled()) {
+            if (isOverlayActive) stopOverlay()
+            return
+        }
+
+        // Enforce hard limit immediately whenever Instagram is opened
+        if (isLimitReached()) {
+            enforceLimit()
+            return
+        }
 
         when (event.eventType) {
-            AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED -> handleWindowStateChanged(event)
-            AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED -> handleWindowContentChanged(event)
-            AccessibilityEvent.TYPE_VIEW_SCROLLED -> handleViewScrolled(event)
-        }
-    }
-
-    // -------------------------------------------------------------------------
-    // Event handlers
-    // -------------------------------------------------------------------------
-
-    /**
-     * Called when a new Activity / Fragment comes to the foreground.
-     * Updates [isInReels] and manages the overlay accordingly.
-     */
-    private fun handleWindowStateChanged(event: AccessibilityEvent) {
-        val wasInReels = isInReels
-        isInReels = detectReelsContext(event)
-
-        if (isInReels && !wasInReels) {
-            // Just entered Reels – enforce limit immediately on re-entry
-            if (isLimitReached()) {
-                enforceLimit()
-                return
-            }
-            startOverlay()
-        } else if (!isInReels && wasInReels) {
-            // Left Reels (but still in Instagram or switched away)
-            stopOverlay()
-            lastScrollY = -1
-        }
-
-        // If we navigated away from Instagram entirely, stop overlay
-        if (!isInReels) {
-            stopOverlay()
-        }
-    }
-
-    /**
-     * Called when the window content changes. Used as a secondary signal to
-     * detect/confirm Reels context when the window state hasn't formally changed.
-     */
-    private fun handleWindowContentChanged(event: AccessibilityEvent) {
-        if (!isInReels) {
-            // Check if we've entered Reels without a window-state event
-            val nowInReels = detectReelsContext(event)
-            if (nowInReels) {
-                isInReels = true
-                if (isLimitReached()) {
-                    enforceLimit()
-                    return
+            AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
+            AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED -> {
+                // Ensure overlay HUD is active when Instagram is in foreground
+                if (!isOverlayActive && !isLimitReached()) {
+                    startOverlay()
                 }
-                startOverlay()
+            }
+
+            AccessibilityEvent.TYPE_VIEW_SCROLLED -> {
+                handleViewScrolled(event)
             }
         }
     }
 
-    /**
-     * Called on each scroll event inside Instagram. Debounces rapid flings and
-     * only counts a new reel when the scroll delta indicates a full reel change.
-     */
     private fun handleViewScrolled(event: AccessibilityEvent) {
-        if (!isInReels) return
+        if (isLimitReached()) {
+            enforceLimit()
+            return
+        }
 
-        val currentScrollY = event.scrollY
-        val scrollDelta = if (lastScrollY >= 0) Math.abs(currentScrollY - lastScrollY) else -1
-        lastScrollY = currentScrollY
-
-        // Only count if the scroll delta is significant (full reel loaded).
-        // A single reel is roughly the full screen height; we use a heuristic
-        // of maxScrollY > 0 meaning the scroll has actually moved, or delta ≥ 1.
-        val isSignificantScroll = scrollDelta < 0 || scrollDelta >= 1
-
-        if (!isSignificantScroll) return
-
-        // Cancel any pending debounce and schedule a fresh one
+        // Cancel previous pending count and debounce
         scrollDebounceRunnable?.let { mainHandler.removeCallbacks(it) }
 
         val runnable = Runnable {
-            if (isInReels) {
+            if (!isLimitReached()) {
                 incrementAndCheck()
+            } else {
+                enforceLimit()
             }
         }
         scrollDebounceRunnable = runnable
@@ -386,11 +350,14 @@ class ReelTrackingAccessibilityService : AccessibilityService() {
     private fun startOverlay() {
         if (isOverlayActive) return
         try {
-            val intent = Intent(this, OverlayService::class.java)
+            val intent = Intent(this, OverlayService::class.java).apply {
+                action = OverlayService.ACTION_SHOW_OVERLAY
+                putExtra(OverlayService.EXTRA_COUNT, PreferencesManager.getCurrentCount())
+                putExtra(OverlayService.EXTRA_LIMIT, PreferencesManager.getDailyLimit())
+            }
             ContextCompat.startForegroundService(this, intent)
             isOverlayActive = true
         } catch (e: Exception) {
-            // Guard against any security / state exceptions
             isOverlayActive = false
         }
     }

@@ -70,27 +70,17 @@ class OverlayService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        val count = intent?.getIntExtra(EXTRA_COUNT, preferencesManager.getTodayReelCount())
+            ?: preferencesManager.getTodayReelCount()
+        val limit = intent?.getIntExtra(EXTRA_LIMIT, preferencesManager.getDailyLimit())
+            ?: preferencesManager.getDailyLimit()
+
         when (intent?.action) {
-            ACTION_SHOW_OVERLAY -> {
-                val count = intent.getIntExtra(EXTRA_COUNT, preferencesManager.getTodayReelCount())
-                val limit = intent.getIntExtra(EXTRA_LIMIT, preferencesManager.getDailyLimit())
+            ACTION_HIDE_OVERLAY -> hideOverlay()
+            else -> {
                 if (!isViewAdded) {
                     createOverlayView(count, limit)
                 } else {
-                    updateHUD(count, limit)
-                }
-            }
-            ACTION_HIDE_OVERLAY -> hideOverlay()
-            ACTION_UPDATE_HUD -> {
-                val count = intent.getIntExtra(EXTRA_COUNT, preferencesManager.getTodayReelCount())
-                val limit = intent.getIntExtra(EXTRA_LIMIT, preferencesManager.getDailyLimit())
-                updateHUD(count, limit)
-            }
-            else -> {
-                // Service started without specific action — update HUD if already visible
-                if (isViewAdded) {
-                    val count = preferencesManager.getTodayReelCount()
-                    val limit = preferencesManager.getDailyLimit()
                     updateHUD(count, limit)
                 }
             }
