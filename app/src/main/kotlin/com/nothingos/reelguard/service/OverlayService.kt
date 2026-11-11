@@ -33,8 +33,41 @@ class OverlayService : Service() {
         const val ACTION_UPDATE_HUD = "com.nothingos.reelguard.UPDATE_HUD"
         const val EXTRA_COUNT = "count"
         const val EXTRA_LIMIT = "limit"
+
+        private var instance: OverlayService? = null
+
+        fun updateLiveCount(count: Int, limit: Int) {
+            instance?.let { s ->
+                s.mainHandler.post {
+                    s.updateHUD(count, limit)
+                }
+            }
+        }
+
+        fun show() {
+            instance?.let { s ->
+                s.mainHandler.post {
+                    val count = s.preferencesManager.getCurrentCount()
+                    val limit = s.preferencesManager.getDailyLimit()
+                    if (!s.isViewAdded) {
+                        s.createOverlayView(count, limit)
+                    } else {
+                        s.updateHUD(count, limit)
+                    }
+                }
+            }
+        }
+
+        fun hide() {
+            instance?.let { s ->
+                s.mainHandler.post {
+                    s.hideOverlay()
+                }
+            }
+        }
     }
 
+    private val mainHandler = android.os.Handler(android.os.Looper.getMainLooper())
     private var windowManager: WindowManager? = null
     private var hudView: TextView? = null
     private var isViewAdded = false
@@ -43,7 +76,7 @@ class OverlayService : Service() {
     private val countUpdatedReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (intent?.action == ReelTrackingAccessibilityService.ACTION_COUNT_UPDATED) {
-                val count = intent.getIntExtra(EXTRA_COUNT, 0)
+                val count = intent.getIntExtra(EXTRA_COUNT, intent.getIntExtra("extra_current_count", preferencesManager.getCurrentCount()))
                 val limit = preferencesManager.getDailyLimit()
                 updateHUD(count, limit)
             }
@@ -52,6 +85,7 @@ class OverlayService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        instance = this
         PreferencesManager.initialize(this)
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
         createNotificationChannel()
@@ -228,6 +262,7 @@ class OverlayService : Service() {
     // ------------------------------------------------------------------ //
 
     override fun onDestroy() {
+        if (instance == this) instance = null
         hideOverlay()
         try {
             unregisterReceiver(countUpdatedReceiver)

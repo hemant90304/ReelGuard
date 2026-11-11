@@ -123,12 +123,7 @@ class ReelTrackingAccessibilityService : AccessibilityService() {
             ContextCompat.RECEIVER_NOT_EXPORTED
         )
 
-        // Start overlay only if the daily limit has not been reached yet
-        if (PreferencesManager.isServiceEnabled() &&
-            PreferencesManager.getCurrentCount() < PreferencesManager.getDailyLimit()
-        ) {
-            startOverlay()
-        }
+        // Do not auto-start overlay on connected — it must only appear when Reels is active
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
@@ -155,55 +150,137 @@ class ReelTrackingAccessibilityService : AccessibilityService() {
 
         val pkg = event.packageName?.toString()
 
-        // If user left Instagram, stop overlay immediately
+        // If user is outside Instagram (launcher, settings, another app), hide overlay immediately!
         if (pkg != INSTAGRAM_PKG) {
             if (isOverlayActive) {
                 stopOverlay()
             }
+            isInReels = false
             return
         }
 
-        // Skip if service is disabled in ReelGuard settings
+        // If disabled in ReelGuard settings, hide overlay and do nothing
         if (!PreferencesManager.isServiceEnabled()) {
             if (isOverlayActive) stopOverlay()
+            isInReels = false
             return
         }
 
-        // Enforce hard limit immediately whenever Instagram is opened
-        if (isLimitReached()) {
-            enforceLimit()
-            return
-        }
+        // Check if currently inside the Reels viewer
+        val reelsActive = isUserInReels(event)
+        isInReels = reelsActive
 
-        when (event.eventType) {
-            AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
-            AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED -> {
-                // Ensure overlay HUD is active when Instagram is in foreground
-                if (!isOverlayActive && !isLimitReached()) {
-                    startOverlay()
-                }
+        if (reelsActive) {
+            // Enforce hard limit immediately if reached
+            if (isLimitReached()) {
+                enforceLimit()
+                return
             }
 
-            AccessibilityEvent.TYPE_VIEW_SCROLLED -> {
-                handleViewScrolled(event)
+            // Show overlay only when Reels is active
+            if (!isOverlayActive) {
+                startOverlay()
+            }
+
+            // If scrolling inside Reels, debounce & increment counter
+            if (event.eventType == AccessibilityEvent.TYPE_VIEW_SCROLLED) {
+                handleReelScrolled(event)
+            }
+        } else {
+            // User is on Instagram Feed, Stories, DMs, or Profile — hide overlay and DO NOT count!
+            if (isOverlayActive) {
+                stopOverlay()
             }
         }
     }
 
-    private fun handleViewScrolled(event: AccessibilityEvent) {
+    /**
+     * Inspects the active window hierarchy to distinguish between:
+     * - Reels viewer / Clips tab (returns true)
+     * - Feed post scroll, Stories, Explore, Messages (returns false)
+     */
+    private fun isUserInReels(event: AccessibilityEvent): Boolean {
+        // Fast path: check event source
+        event.source?.let { node ->
+            try {
+                if (nodeMatchesReels(node)) return true
+            } finally {
+                node.recycle()
+            }
+        }
+
+        // Deep path: inspect root in active window
+        rootInActiveWindow?.let { root ->
+            try {
+                return nodeMatchesReels(root)
+            } finally {
+                root.recycle()
+            }
+        }
+
+        return false
+    }
+
+    private fun nodeMatchesReels(node: AccessibilityNodeInfo, depth: Int = 0): Boolean {
+        if (depth > 6) return false
+
+        val desc = node.contentDescription?.toString()?.lowercase() ?: ""
+        val text = node.text?.toString()?.lowercase() ?: ""
+        val viewId = node.viewIdResourceName?.lowercase() ?: ""
+
+        // Specific signals found exclusively inside Instagram Reels viewer
+        if (desc.contains("reel by") ||
+            desc.contains("original audio") ||
+            desc.contains("audio by") ||
+            desc.contains("remix with") ||
+            viewId.contains("clips_viewer") ||
+            viewId.contains("reel_viewer") ||
+            viewId.contains("clips_video_container") ||
+            text.contains("original audio") ||
+            text.contains("use audio")
+        ) {
+            return true
+        }
+
+        // Bottom navigation bar check: Reels tab selected
+        if ((desc == "reels" || desc == "clips") && node.isSelected) {
+            return true
+        }
+
+        for (i in 0 until node.childCount) {
+            val child = node.getChild(i) ?: continue
+            try {
+                if (nodeMatchesReels(child, depth + 1)) return true
+            } finally {
+                child.recycle()
+            }
+        }
+
+        return false
+    }
+
+    private fun handleReelScrolled(event: AccessibilityEvent) {
         if (isLimitReached()) {
             enforceLimit()
             return
         }
 
-        // Cancel previous pending count and debounce
+        val currentScrollY = event.scrollY
+        val scrollDelta = if (lastScrollY >= 0) Math.abs(currentScrollY - lastScrollY) else -1
+        lastScrollY = currentScrollY
+
+        // Filter tiny micro-drags
+        if (scrollDelta == 0) return
+
         scrollDebounceRunnable?.let { mainHandler.removeCallbacks(it) }
 
         val runnable = Runnable {
-            if (!isLimitReached()) {
-                incrementAndCheck()
-            } else {
-                enforceLimit()
+            if (isInReels) {
+                if (!isLimitReached()) {
+                    incrementAndCheck()
+                } else {
+                    enforceLimit()
+                }
             }
         }
         scrollDebounceRunnable = runnable
@@ -289,11 +366,15 @@ class ReelTrackingAccessibilityService : AccessibilityService() {
     /** Increments the reel counter and enforces the daily limit if reached. */
     private fun incrementAndCheck() {
         val newCount = PreferencesManager.incrementReelCount()
+        val limit = PreferencesManager.getDailyLimit()
 
-        // Broadcast count update so the overlay / UI can refresh
+        // Instant live update directly to the floating HUD
+        OverlayService.updateLiveCount(newCount, limit)
+
+        // Broadcast count update so the UI can refresh
         broadcastCountUpdated(newCount)
 
-        if (newCount >= PreferencesManager.getDailyLimit()) {
+        if (newCount >= limit) {
             enforceLimit()
         }
     }
@@ -357,6 +438,7 @@ class ReelTrackingAccessibilityService : AccessibilityService() {
             }
             ContextCompat.startForegroundService(this, intent)
             isOverlayActive = true
+            OverlayService.show()
         } catch (e: Exception) {
             isOverlayActive = false
         }
@@ -366,6 +448,7 @@ class ReelTrackingAccessibilityService : AccessibilityService() {
     private fun stopOverlay() {
         if (!isOverlayActive) return
         try {
+            OverlayService.hide()
             val intent = Intent(this, OverlayService::class.java)
             stopService(intent)
         } catch (_: Exception) {
